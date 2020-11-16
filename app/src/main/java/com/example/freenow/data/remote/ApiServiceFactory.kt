@@ -1,4 +1,4 @@
-package com.example.freenow.remote
+package com.example.freenow.data.remote
 
 import com.example.freenow.util.Constants
 import com.google.gson.FieldNamingPolicy

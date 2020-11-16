@@ -1,4 +1,4 @@
-package com.example.freenow.remote
+package com.example.freenow.data.remote
 
 
 /**
