@@ -27,18 +27,9 @@ object ApiServiceFactory {
         val retrofit = Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(makeGson()))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit.create(ApiService::class.java)
-    }
-
-
-    private fun makeGson(): Gson {
-        return GsonBuilder()
-            .setLenient()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create()
     }
 
     private fun makeLoggingInterceptor(isDebug: Boolean): HttpLoggingInterceptor {

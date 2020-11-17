@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FreeNow</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="id">Id: %1$s</string>
+    <string name="fleet_type">Fleet type: %1$s</string>
+    <string name="show_all_available_vehicles">Show all available vehicles</string>
 </resources>
