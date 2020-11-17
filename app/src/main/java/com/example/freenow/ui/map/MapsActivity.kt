@@ -69,7 +69,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showPointsOnMap(pois: List<PoiModel>?) {
-        mMap.clear()
+         mMap.clear()
         pois?.forEach { poiModel ->
             val poiPoint = LatLng(poiModel.coordinate.latitude, poiModel.coordinate.longitude)
             val markerOptions = MarkerOptions().position(poiPoint).title(poiModel.fleetType.name)
@@ -97,7 +97,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
         if (targetPoi != null) {
             val targetPoint =
                 LatLng(targetPoi!!.coordinate.latitude, targetPoi!!.coordinate.longitude)
