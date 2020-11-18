@@ -35,8 +35,11 @@
         <activity
             android:name=".ui.map.MapsActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".ui.MainActivity">
+            android:label="@string/title_activity_maps"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
