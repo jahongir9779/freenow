@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "38000889288",
+    "firebase_url": "https://freenow-635e1.firebaseio.com",
+    "project_id": "freenow-635e1",
+    "storage_bucket": "freenow-635e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38000889288:android:8bd6f51728e061e0ccc4fd",
+        "android_client_info": {
+          "package_name": "com.example.freenow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "38000889288-04nudqkcm3dv6je069piaqik6dskgv2d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqlWfqZiTP_3UXedw9ND3CKXfqBTVqTEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "38000889288-04nudqkcm3dv6je069piaqik6dskgv2d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,11 +29,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_map.*
 
 
-const val EXTRA_POI_VIEW_OBJECT = "POI_VIEW_OBJECT"
-const val EXTRA_DEFAULT_BOUNDS_VIEW_OBJECT = "DEFAULT_BOUNDS"
-
 @AndroidEntryPoint
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    companion object {
+        val EXTRA_POI_VIEW_OBJECT = "POI_VIEW_OBJECT"
+        val EXTRA_DEFAULT_BOUNDS_VIEW_OBJECT = "DEFAULT_BOUNDS"
+    }
+
     private val initial_zoom_lvl = 17F
 
     private var targetPoi: PoiViewObj? = null
@@ -44,17 +47,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        setupActionbar()
-
         targetPoi = intent.getParcelableExtra(EXTRA_POI_VIEW_OBJECT)
         defaultBounds = intent.getParcelableExtra(EXTRA_DEFAULT_BOUNDS_VIEW_OBJECT)
 
+        setupActionbar()
+        setupMap()
+        subscribeObservers()
+    }
+
+    private fun setupMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        subscribeObservers()
     }
 
     private fun subscribeObservers() {
@@ -65,11 +70,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.errorMessage.observe(this, {
             Snackbar.make(llParent, it, Snackbar.LENGTH_SHORT).show()
         })
-
     }
 
     private fun showPointsOnMap(pois: List<PoiModel>?) {
-         mMap.clear()
+        mMap.clear()
         pois?.forEach { poiModel ->
             val poiPoint = LatLng(poiModel.coordinate.latitude, poiModel.coordinate.longitude)
             val markerOptions = MarkerOptions().position(poiPoint).title(poiModel.fleetType.name)
@@ -129,7 +133,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun setupActionbar() {
-
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
