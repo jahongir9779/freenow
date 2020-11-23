@@ -3,11 +3,8 @@ package com.example.freenow.ui.map
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.SystemClock
 import android.view.MenuItem
-import android.view.animation.Interpolator
-import android.view.animation.LinearInterpolator
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,6 +63,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             showPointsOnMap(it)
         })
 
+        viewModel.isLoading.observe(this, {
+            horizontalProgress.visibility = if (it == true) View.VISIBLE else View.INVISIBLE
+        })
+
         viewModel.errorMessage.observe(this, {
             Snackbar.make(llParent, it, Snackbar.LENGTH_SHORT).show()
         })
@@ -75,18 +75,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showPointsOnMap(pois: List<PoiModel>?) {
         mMap.clear()
         pois?.forEach { poiModel ->
-            val poiPoint = LatLng(poiModel.coordinate.latitude, poiModel.coordinate.longitude)
-            val markerOptions = MarkerOptions().position(poiPoint).title(poiModel.fleetType.name)
-                .rotation(poiModel.heading.toFloat()).alpha(0F)
-            val carIconResourceId =
-                if (poiModel.fleetType == EFleetType.POOLING) R.drawable.car_pooling else R.drawable.car_taxi
-            val bitmapdraw = ContextCompat.getDrawable(this, carIconResourceId) as BitmapDrawable
-            val b = bitmapdraw.bitmap
-            val smallMarker = Bitmap.createScaledBitmap(b, 50, 100, false)
-            val marker = mMap.addMarker(markerOptions)
-
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-            animateMarker(marker)
+            addMarkerToMap(
+                LatLng(poiModel.coordinate.latitude, poiModel.coordinate.longitude),
+                poiModel.fleetType,
+                poiModel.heading.toFloat()
+            )
         }
     }
 
@@ -104,17 +97,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (targetPoi != null) {
             val targetPoint =
                 LatLng(targetPoi!!.coordinate.latitude, targetPoi!!.coordinate.longitude)
-            val markerOptions =
-                MarkerOptions().position(targetPoint).title(targetPoi!!.fleetType.name)
-                    .rotation(targetPoi!!.heading.toFloat())
-            val carIconResourceId =
-                if (targetPoi!!.fleetType == EFleetType.POOLING) R.drawable.car_pooling else R.drawable.car_taxi
-            val bitmapdraw = ContextCompat.getDrawable(this, carIconResourceId) as BitmapDrawable
-            val b = bitmapdraw.bitmap
-            val smallMarker = Bitmap.createScaledBitmap(b, 50, 100, false)
-            val marker = mMap.addMarker(markerOptions)
-
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+            addMarkerToMap(targetPoint, targetPoi!!.fleetType, targetPoi!!.heading.toFloat())
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(targetPoint, initial_zoom_lvl))
         } else if (defaultBounds != null) {
             val targetPoint = LatLng(defaultBounds!!.p1Latitude, defaultBounds!!.p1Longitude)
@@ -131,6 +114,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun addMarkerToMap(targetPoint: LatLng, fleetType: EFleetType, heading: Float) {
+        mMap.addMarker(
+            MarkerOptions().apply {
+                position(targetPoint)
+                title(fleetType.name)
+                rotation(heading)
+                icon(BitmapDescriptorFactory.fromBitmap(getIconForFleetType(fleetType)))
+            }
+        )
+    }
+
+    private fun getIconForFleetType(fleetType: EFleetType): Bitmap? {
+        val carIconResourceId =
+            if (fleetType == EFleetType.POOLING) R.drawable.car_pooling else R.drawable.car_taxi
+        val carIconBitmapDrawable =
+            ContextCompat.getDrawable(this, carIconResourceId) as BitmapDrawable
+        return Bitmap.createScaledBitmap(carIconBitmapDrawable.bitmap, 50, 100, false)
+    }
+
 
     private fun setupActionbar() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -143,29 +145,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             onBackPressed()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-
-    fun animateMarker(marker: Marker) {
-        val duration: Long = 600
-        val handler = Handler()
-        val start = SystemClock.uptimeMillis();
-
-        val interpolator: Interpolator = LinearInterpolator()
-        handler.post(object : Runnable {
-            override fun run() {
-                val elapsed = SystemClock.uptimeMillis() - start
-                val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
-                val target = 1 * t
-                marker.alpha = target
-                if (t < 1.0) {
-                    // Post again 10ms later.
-                    handler.postDelayed(this, 10)
-                } else {
-                    // animation ended
-                }
-            }
-        })
     }
 
 }

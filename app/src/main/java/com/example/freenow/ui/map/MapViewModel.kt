@@ -11,9 +11,12 @@ import com.example.freenow.common.exhaustive
 import com.example.freenow.domain.models.BoundsModel
 import com.example.freenow.domain.models.PoiModel
 import com.example.freenow.domain.usecases.GetAvailablePoiListForBounds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MapViewModel @ViewModelInject constructor(private val getAvailablePoiList: GetAvailablePoiListForBounds) : ViewModel() {
+class MapViewModel @ViewModelInject constructor(private val getAvailablePoiList: GetAvailablePoiListForBounds) :
+    ViewModel() {
 
 
     private val _poiList = MutableLiveData<List<PoiModel>>()
@@ -25,13 +28,15 @@ class MapViewModel @ViewModelInject constructor(private val getAvailablePoiList:
 
     fun getPoiListInBounds(p1Lat: Double, p1Lon: Double, p2Lat: Double, p2Lon: Double) {
         _isLoading.value = true
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val response = getAvailablePoiList.execute(BoundsModel(p1Lat, p1Lon, p2Lat, p2Lon))
-            _isLoading.value = false
-            when (response) {
-                is ResultError -> _errorMessage.value = response.message
-                is ResultSuccess -> _poiList.value = response.value
-            }.exhaustive
+            withContext(Dispatchers.Main) {
+                _isLoading.value = false
+                when (response) {
+                    is ResultError -> _errorMessage.value = response.message
+                    is ResultSuccess -> _poiList.value = response.value
+                }.exhaustive
+            }
         }
     }
 

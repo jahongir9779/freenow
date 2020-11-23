@@ -12,7 +12,9 @@ import com.example.freenow.domain.models.BoundsModel
 import com.example.freenow.domain.models.PoiModel
 import com.example.freenow.domain.usecases.GetPoiListForBounds
 import com.example.freenow.ui.view_objects.BoundsViewObj
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel @ViewModelInject constructor(private val getPoiList: GetPoiListForBounds) :
     ViewModel() {
@@ -28,20 +30,22 @@ class MainViewModel @ViewModelInject constructor(private val getPoiList: GetPoiL
 
     fun getPoiListInBounds() {
         _isLoading.value = true
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val response = getPoiList.execute(
                 BoundsModel(
                     defaultBounds.p1Latitude,
-                    defaultBounds.p1Latitude,
-                    defaultBounds.p1Latitude,
-                    defaultBounds.p1Latitude
+                    defaultBounds.p1Longitude,
+                    defaultBounds.p2Latitude,
+                    defaultBounds.p2Longitude
                 )
             )
-            _isLoading.value = false
-            when (response) {
-                is ResultError -> _errorMessage.value = response.message
-                is ResultSuccess -> _poiList.value = response.value
-            }.exhaustive
+            withContext(Dispatchers.Main) {
+                _isLoading.value = false
+                when (response) {
+                    is ResultError -> _errorMessage.value = response.message
+                    is ResultSuccess -> _poiList.value = response.value
+                }.exhaustive
+            }
         }
     }
 

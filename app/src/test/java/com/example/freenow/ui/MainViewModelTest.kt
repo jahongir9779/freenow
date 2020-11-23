@@ -1,116 +1,77 @@
 package com.example.freenow.ui
 
-import androidx.lifecycle.LiveData
-import com.example.freenow.common.ResultSuccess
-import com.example.freenow.data.PoiRepositoryImpl
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.freenow.common.ResultError
 import com.example.freenow.domain.models.BoundsModel
-import com.example.freenow.domain.models.PoiModel
-import com.example.freenow.domain.repositories.PoiRepository
 import com.example.freenow.domain.usecases.GetPoiListForBounds
-import com.example.freenow.remote.PoiRemoteImpl
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class MainViewModelTest {
 
-    private lateinit var viewModel: MainViewModel
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var isLoadingLiveData: LiveData<Boolean>
-
-    private lateinit var isErrorLiveData: LiveData<String>
-
+    private val testDispatcher = TestCoroutineDispatcher()
+    private val mockGetPoiListForBounds = mockk<GetPoiListForBounds>()
+    private val testSubject = MainViewModel(mockGetPoiListForBounds)
 
     @Before
-    fun setUp() {
-//        `when`(repo.teams).thenReturn(teamListLiveData)
-        viewModel = MainViewModel(GetPoiListForBounds(mockk<PoiRepositoryImpl>()))
-        repository = mockk<PoiRepository>()
-        isLoadingLiveData = viewModel.isLoading
-        isErrorLiveData = viewModel.errorMessage
+    fun setup() {
+        // Sets the given [dispatcher] as an underlying dispatcher of [Dispatchers.Main].
+        // All consecutive usages of [Dispatchers.Main] will use given [dispatcher] under the hood.
+        Dispatchers.setMain(testDispatcher)
     }
 
     @Test
-    fun `get poi list with empty bounds, returns error`() {
-        viewModel.getPoiListInBounds()
-    }
+    fun test_get_poi_list_in_bounds() = runBlocking {
+        mockkObject(BoundsModel.Factory)
+        val mockBoundsModel = mockk<BoundsModel>()
+        val mockResult = mockk<ResultError>()
+        every { mockResult.message } returns "error"
+        every {
+            BoundsModel.Factory.create(
+                testSubject.defaultBounds.p1Latitude,
+                testSubject.defaultBounds.p1Longitude,
+                testSubject.defaultBounds.p2Latitude,
+                testSubject.defaultBounds.p2Longitude
+            )
+        } returns mockBoundsModel
 
-    private lateinit var repository: PoiRepository
-
-    @Test
-    fun testGetDataSuccess() {
-        val successResult = ResultSuccess<List<PoiModel>>(listOf())
-        runBlockingTest {
-            (repository.getPoiListInBounds(
-                BoundsModel(
-                    .694865,
-                    9.757589,
-                    53.394655,
-                    10.099891
-                )
-            ))
-            (successResult)
-
-            val result = viewModel.getPoiListInBounds()
-
-            // verify loading
-            assert(isLoadingLiveData.value == true)
-
-//            result.observeForTesting {
-//                testDispatcher.resumeDispatcher()
-//                assertThat(result.value).isEqualTo(successResult)
-//            }
-        }
-    }
-
-    @Test
-    fun givenServiceMock_whenCallingMockedMethod_thenCorrectlyVerified() {
-        // given
-        val service = mockk<PoiRemoteImpl>()
         every {
             runBlocking {
-                service.getPoiListInBounds(
-                    BoundsModel(
-                        .694865,
-                        9.757589,
-                        53.394655,
-                        10.099891
-                    )
-                )
+                mockGetPoiListForBounds.execute(mockBoundsModel)
             }
-        } returns ResultSuccess(listOf())
+        }  returns mockResult
 
-        // when
-        val result = runBlocking {
-            service.getPoiListInBounds(
-                BoundsModel(
-                    .694865,
-                    9.757589,
-                    53.394655,
-                    10.099891
-                )
+        testSubject.getPoiListInBounds()
+
+        verify(exactly = 1) { mockResult.message }
+        verify(exactly = 1) {
+            BoundsModel.Factory.create(
+                testSubject.defaultBounds.p1Latitude,
+                testSubject.defaultBounds.p1Longitude,
+                testSubject.defaultBounds.p2Latitude,
+                testSubject.defaultBounds.p2Longitude
             )
         }
-
-        // then
-        verify {
+        verify(exactly = 1) {
             runBlocking {
-                service.getPoiListInBounds(
-                    BoundsModel(
-                        .694865,
-                        9.757589,
-                        53.394655,
-                        10.099891
-                    )
-                )
+                mockGetPoiListForBounds.execute(mockBoundsModel)
             }
         }
-        assertEquals(ResultSuccess<List<PoiModel>>(listOf()), result)
+
+        assertEquals(testSubject.errorMessage.value, "error")
     }
+
 }
