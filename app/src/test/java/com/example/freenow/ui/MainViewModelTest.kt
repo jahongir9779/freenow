@@ -14,16 +14,17 @@ class MainViewModelTest {
 
     private lateinit var isErrorLiveData: LiveData<String>
 
-    @Mock
-    private lateinit var repo: GetPoiListForBounds
 
     @Before
     fun setUp() {
 //        `when`(repo.teams).thenReturn(teamListLiveData)
-        viewModel = MainViewModel(repo)
+//        viewModel = MainViewModel(repo)
 
         isLoadingLiveData = viewModel.isLoading
         isErrorLiveData = viewModel.errorMessage
+
+
+
     }
 
     @Test

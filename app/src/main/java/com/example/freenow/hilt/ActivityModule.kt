@@ -1,6 +1,6 @@
 package com.example.freenow.hilt
 
-import com.example.freenow.data.mappers.PoiMapper
+import com.example.freenow.data.mappers.PoiDataToDomainMapper
 import com.example.freenow.data.remote.ApiService
 import com.example.freenow.data.repository.PoiRepositoryImpl
 import com.example.freenow.domain.repositories.PoiRepository
@@ -27,12 +27,12 @@ object ActivityModule {
     }
 
     @Provides
-    fun provideRemoteRepoImpl(apiService: ApiService, mapper: PoiMapper): PoiRepository {
+    fun provideRemoteRepoImpl(apiService: ApiService, mapper: PoiDataToDomainMapper): PoiRepository {
         return PoiRepositoryImpl(apiService, mapper)
     }
 
     @Provides
-    fun providePoiMapper() = PoiMapper()
+    fun providePoiMapper() = PoiDataToDomainMapper()
 
 
 }

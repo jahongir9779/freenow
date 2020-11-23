@@ -5,7 +5,7 @@ import com.example.freenow.domain.models.CoordinateModel
 import com.example.freenow.domain.models.PoiModel
 import javax.inject.Inject
 
-class PoiMapper @Inject constructor() {
+class PoiDataToDomainMapper @Inject constructor() {
 
     fun toPoi(poiNetwork: PoiDataModel): PoiModel {
         val coordinateModel =

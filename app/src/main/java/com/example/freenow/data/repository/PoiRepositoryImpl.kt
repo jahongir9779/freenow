@@ -3,7 +3,7 @@ package com.example.freenow.data.repository
 import com.example.freenow.common.ResultError
 import com.example.freenow.common.ResultSuccess
 import com.example.freenow.common.ResultWrapper
-import com.example.freenow.data.mappers.PoiMapper
+import com.example.freenow.data.mappers.PoiDataToDomainMapper
 import com.example.freenow.data.remote.ApiService
 import com.example.freenow.domain.models.BoundsModel
 import com.example.freenow.domain.models.PoiModel
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class PoiRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val mapper: PoiMapper
+    private val poiDataToDomainMapper: PoiDataToDomainMapper
 ) : PoiRepository {
 
     override suspend fun getPoiListInBounds(bounds: BoundsModel): ResultWrapper<List<PoiModel>> {
@@ -26,7 +26,7 @@ class PoiRepositoryImpl @Inject constructor(
             )
             when {
                 resp.poiList != null -> ResultSuccess(resp.poiList.map {
-                    mapper.toPoi(it)
+                    poiDataToDomainMapper.toPoi(it)
                 })
                 else -> ResultError("Expected object is null")
             }
