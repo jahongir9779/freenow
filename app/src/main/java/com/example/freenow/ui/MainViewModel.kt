@@ -32,13 +32,14 @@ class MainViewModel @ViewModelInject constructor(private val getPoiList: GetPoiL
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val response = getPoiList.execute(
-                BoundsModel(
+                BoundsModel.Factory.create(
                     defaultBounds.p1Latitude,
                     defaultBounds.p1Longitude,
                     defaultBounds.p2Latitude,
                     defaultBounds.p2Longitude
                 )
             )
+
             withContext(Dispatchers.Main) {
                 _isLoading.value = false
                 when (response) {
