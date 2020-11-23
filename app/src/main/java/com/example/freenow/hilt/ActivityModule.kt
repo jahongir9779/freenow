@@ -1,8 +1,11 @@
 package com.example.freenow.hilt
 
+import com.example.freenow.data.PoiRepositoryImpl
 import com.example.freenow.data.mappers.PoiDataToDomainMapper
-import com.example.freenow.data.remote.ApiService
-import com.example.freenow.data.repository.PoiRepositoryImpl
+import com.example.freenow.data.repository.PoiRemote
+import com.example.freenow.data.source.PoiRemoteDataStore
+import com.example.freenow.remote.ApiService
+import com.example.freenow.remote.PoiRemoteImpl
 import com.example.freenow.domain.repositories.PoiRepository
 import com.example.freenow.domain.usecases.GetAvailablePoiListForBounds
 import com.example.freenow.domain.usecases.GetPoiListForBounds
@@ -27,8 +30,19 @@ object ActivityModule {
     }
 
     @Provides
-    fun provideRemoteRepoImpl(apiService: ApiService, mapper: PoiDataToDomainMapper): PoiRepository {
-        return PoiRepositoryImpl(apiService, mapper)
+    fun providePoiRepositoryImpl(poiRemoteDataStore: PoiRemoteDataStore): PoiRepository {
+        return PoiRepositoryImpl(poiRemoteDataStore )
+    }
+
+
+    @Provides
+    fun providePoiRemoteDataStore(poiRemote: PoiRemote): PoiRemoteDataStore {
+        return PoiRemoteDataStore( poiRemote)
+    }
+
+    @Provides
+    fun provideRemoteRepoImpl(apiService: ApiService, mapper: PoiDataToDomainMapper): PoiRemote {
+        return PoiRemoteImpl(apiService, mapper)
     }
 
     @Provides

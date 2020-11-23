@@ -1,20 +1,19 @@
-package com.example.freenow.data.repository
+package com.example.freenow.remote
 
 import com.example.freenow.common.ResultError
 import com.example.freenow.common.ResultSuccess
 import com.example.freenow.common.ResultWrapper
 import com.example.freenow.data.mappers.PoiDataToDomainMapper
-import com.example.freenow.data.remote.ApiService
+import com.example.freenow.data.repository.PoiRemote
 import com.example.freenow.domain.models.BoundsModel
 import com.example.freenow.domain.models.PoiModel
-import com.example.freenow.domain.repositories.PoiRepository
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class PoiRepositoryImpl @Inject constructor(
+class PoiRemoteImpl @Inject constructor(
     private val apiService: ApiService,
     private val poiDataToDomainMapper: PoiDataToDomainMapper
-) : PoiRepository {
+) : PoiRemote {
 
     override suspend fun getPoiListInBounds(bounds: BoundsModel): ResultWrapper<List<PoiModel>> {
         return try {

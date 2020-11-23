@@ -1,6 +1,5 @@
-package com.example.freenow.data.remote
+package com.example.freenow.remote
 
-import com.example.freenow.data.model.PoiDataModel
 import com.example.freenow.data.model.PoiListResponse
 import retrofit2.http.GET
 import retrofit2.http.Query

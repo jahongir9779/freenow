@@ -1,8 +1,8 @@
 package com.example.freenow.hilt
 
 import com.example.freenow.BuildConfig
-import com.example.freenow.data.remote.ApiService
-import com.example.freenow.data.remote.ApiServiceFactory
+import com.example.freenow.remote.ApiService
+import com.example.freenow.remote.ApiServiceFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
