@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "38000889288-7vtn710tasdblvfepq3r31mtk04h3srm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.freenow",
+            "certificate_hash": "0b73245d1a3d7ee0c5a6882707a47336d0660043"
+          }
+        },
+        {
           "client_id": "38000889288-04nudqkcm3dv6je069piaqik6dskgv2d.apps.googleusercontent.com",
           "client_type": 3
         }
